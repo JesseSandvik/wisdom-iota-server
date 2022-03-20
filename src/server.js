@@ -1,13 +1,25 @@
-const logEvents = require('./logEvents');
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
+const path = require('path');
+const {logger} = require('./middleware/logEvents');
+const {errorHandler} = require('./middleware/errorHandler');
+const PORT = process.env.PORT || 5000;
 
-const EventEmitter = require('events');
+app.use(logger);
+app.use(cors(corsOptions));
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
-class MyEmitter extends EventEmitter {}
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
-const myEmitter = new MyEmitter();
+app.all('*', (req, res) => {
+  res.status(404).json({error: '404 Not Found'});
+});
 
-myEmitter.on('log', msg => logEvents(msg));
+app.use(errorHandler);
 
-setTimeout(() => {
-  myEmitter.emit('log', 'Log event emitted!');
-}, 2000);
+app.listen(PORT, () => console.log(`Server running on port ${PORT}!`));
