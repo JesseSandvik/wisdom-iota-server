@@ -12,6 +12,9 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
+app.use('/register', require('./register/register.router'));
+app.use('/auth', require('./auth/auth.router'));
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
